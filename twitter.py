@@ -39,7 +39,10 @@ class Twitter:
         if len(message) > 160:  # jeżeli wiadomość ma więcej niż 160 znaków to wywołaj błąd
             raise Exception(
                 "Message too long")  # Exception podstawowa klasa wyjątków pierwszy parametr to jest komunikat
-        self.tweets.append({'message': message, 'avatar': self.get_user_avatar()})
+        self.tweets.append({'message': message,
+                            'avatar': self.get_user_avatar(),
+                            'hashtags': self.find_hashtags(message)
+                            })
         if self.backend:
             self.backend.write(json.dumps(self.tweets))
 

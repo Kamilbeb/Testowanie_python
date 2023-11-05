@@ -7,6 +7,8 @@ class Twitter:
     def __init__(self):
         self.tweets = []
 
+    def delete(self):
+        print("It's the end")
     def tweet(self, message):
         if len(message) > 160:  #jeżeli wiadomość ma więcej niż 160 znaków to wywołaj błąd
             raise Exception("Message too long")   #Exception podstawowa klasa wyjątków pierwszy parametr to jest komunikat

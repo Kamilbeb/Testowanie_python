@@ -3,9 +3,9 @@ import pytest
 from twitter import Twitter
 
 
-@pytest.fixture  # dekorator który globalnie udostępnił nam w kodzie twitter
-def twitter():
-    twitter = Twitter()
+@pytest.fixture(params=[None, 'test.txt'])  # dekorator który globalnie udostępnił nam w kodzie twitter, testy wykonają się podwójnie bez backendu i z backendem
+def twitter(request):
+    twitter = Twitter(backend=request.param)
     yield twitter  # kiedy poszczególne testy się wykonały wówczas uruchamia się metoda delete
     twitter.delete()
 

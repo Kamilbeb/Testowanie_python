@@ -1,3 +1,6 @@
+import re
+
+
 class Twitter:
     version = '1.0'
 
@@ -9,7 +12,5 @@ class Twitter:
             raise Exception("Message too long")   #Exception podstawowa klasa wyjątków pierwszy parametr to jest komunikat
         self.tweets.append(message)
 
-twitter = Twitter()
-print(twitter.version, twitter.tweets)
-twitter.tweet("This is a test message")
-print(twitter.tweets)
+    def find_hashtags(self, message):   #metoda wyszukująca w wiadomości hasztag
+        return [m.lower() for m in re.findall("#(\w+)", message)]

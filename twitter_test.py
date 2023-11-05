@@ -3,11 +3,21 @@ import pytest
 from twitter import Twitter
 
 
-@pytest.fixture(params=[None, 'test.txt'])  # dekorator który globalnie udostępnił nam w kodzie twitter, testy wykonają się podwójnie bez backendu i z backendem
-def twitter(request):
-    twitter = Twitter(backend=request.param)
-    yield twitter  # kiedy poszczególne testy się wykonały wówczas uruchamia się metoda delete
-    twitter.delete()
+@pytest.fixture  # autouse=Truebędzie wykonana przed każdym testem bez względu czy test będzie tego potrzebował
+def backend(tmpdir):
+    temp_file = tmpdir.join('test.txt')
+    temp_file.write('')
+    return temp_file
+
+
+@pytest.fixture(params=['List', 'backend'],
+                name='twitter')  # dekorator który globalnie udostępnił nam w kodzie twitter, testy wykonają się podwójnie bez backendu i z backendem
+def fixture_twitter(backend, request):
+    if request.param == 'List':
+        twitter = Twitter()
+    elif request.param == 'backend':
+        twitter = Twitter(backend=backend)
+    return twitter
 
 
 def test_twitter_initialization(twitter):
@@ -25,7 +35,14 @@ def test_tweet_long_message(twitter):
             'test' * 41)  # tutaj będziemy sprawdzać czy nasz błąd spowoduje wywołanie wyjątku. Pytest da wynik pozytywny bo spodziewaliśmy się tego błędu
     assert twitter.tweets == []  # sprawdzenie że ten tweet nie został dodany do tweets
 
+def test_initialize_two_twitter_classes(backend):
+    twitter1 = Twitter(backend=backend)
+    twitter2 = Twitter(backend=backend)
 
+    twitter1.tweet('Test 1')
+    twitter1.tweet('Test 2')
+
+    assert twitter2.tweets == ['Test 1', 'Test 2']
 @pytest.mark.parametrize("message, expected", (
         ("Test #first message", ["first"]),
         ("#first Test message", ["first"]),
